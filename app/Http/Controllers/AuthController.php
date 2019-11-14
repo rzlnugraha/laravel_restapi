@@ -2,23 +2,31 @@
 
 namespace App\Http\Controllers;
 
+
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\User;
 use Illuminate\Http\Request;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
     protected function respondWithToken($token)
     {
+        $code = 200;
         return response()->json([
-            'access_token' => $token, 
-            'token_type' => 'bearer', 
-            'expires_in' => auth('api')->factory()->getTTL() * 60
-            ]);
-        }
+                'code' => $code,
+                'message' => 'success',
+                'content' => [
+                    'access_token' => $token,
+                    'token_type' => 'bearer',
+                    'expires_in' => auth('api')->factory()->getTTL() * 60
+                ]
+        ],$code);
+    }
     
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
         $user = User::create([
             'name' => $request->name, 
@@ -30,7 +38,7 @@ class AuthController extends Controller
         return $this->respondWithToken($token);
     }
 
-    public function login()
+    public function login(LoginRequest $request)
     {
         $credentials = request([
             'email',
@@ -55,6 +63,20 @@ class AuthController extends Controller
     public function me()
     {
         return response()->json(auth()->user());
+    }
+
+    public function logout(Request $request)
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+        $logout = JWTAuth::invalidate();
+        $code = 200;
+        $response = [
+            'code' => $code,
+            'message' => 'Berhasil logout',
+            'content' => $logout
+        ];
+
+        return response()->json($response, $code);
     }
 }
     
