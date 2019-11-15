@@ -18,7 +18,7 @@ class AuthController extends Controller
         $code = 200;
         return response()->json([
                 'code' => $code,
-                'message' => 'success',
+                'message' => 'Hai ganteng',
                 'content' => [
                     'access_token' => $token,
                     'token_type' => 'bearer',
@@ -50,7 +50,7 @@ class AuthController extends Controller
                 $code = 404;
                 $response = [
                     'code' => $code,
-                    'message' => 'Email yang anda masukan salah'
+                    'message' => 'Email/Password yang anda masukan salah'
                 ];
                 return response()->json($response, $code);
             }
